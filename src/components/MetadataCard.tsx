@@ -30,132 +30,49 @@ interface MetadataCardProps {
 
 const MetadataCard = ({ formData, onInputChange }: MetadataCardProps) => {
   return (
-    <Card className="bg-slate-900/40 backdrop-blur-xl border border-blue-400/30 shadow-2xl shadow-blue-500/10 hover:shadow-blue-500/20 transition-all duration-500">
-      <CardHeader className="bg-gradient-to-r from-slate-800/60 via-blue-900/30 to-slate-800/60 border-b border-blue-400/30 backdrop-blur-sm">
-        <CardTitle className="text-cyan-200 flex items-center gap-3 text-xl">
-          <div className="p-2 rounded-lg bg-blue-500/20 border border-blue-400/40">
-            <Database className="w-5 h-5 text-blue-300" />
+    <Card className="backdrop-blur-xl border shadow-2xl transition-all duration-500"
+          style={{
+            backgroundColor: 'rgba(20, 20, 30, 0.4)',
+            borderColor: 'rgba(78, 113, 255, 0.3)',
+            boxShadow: '0 25px 50px -12px rgba(78, 113, 255, 0.1)'
+          }}>
+      <CardHeader className="border-b backdrop-blur-sm"
+                  style={{
+                    background: 'linear-gradient(to right, rgba(20, 20, 30, 0.6), rgba(78, 113, 255, 0.3), rgba(20, 20, 30, 0.6))',
+                    borderColor: 'rgba(78, 113, 255, 0.3)'
+                  }}>
+        <CardTitle className="flex items-center gap-3 text-xl" style={{color: '#8DD8FF'}}>
+          <div className="p-2 rounded-lg border" 
+               style={{backgroundColor: 'rgba(78, 113, 255, 0.2)', borderColor: 'rgba(78, 113, 255, 0.4)'}}>
+            <Database className="w-5 h-5" style={{color: '#4E71FF'}} />
           </div>
           Observation Metadata
         </CardTitle>
-        <CardDescription className="text-blue-200/80">
+        <CardDescription style={{color: 'rgba(187, 251, 255, 0.8)'}}>
           Configure observation parameters and metadata for cosmic data processing
         </CardDescription>
       </CardHeader>
       <CardContent className="p-6 space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="basename" className="text-cyan-300 font-medium">Basename</Label>
-            <Input
-              id="basename"
-              value={formData.basename}
-              onChange={(e) => onInputChange('basename', e.target.value)}
-              className="bg-slate-800/60 border-blue-400/40 text-cyan-100 placeholder-cyan-400/50 focus:border-cyan-400/70 focus:ring-cyan-400/30 backdrop-blur-sm"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="day_obs" className="text-cyan-300 font-medium">Day OBS</Label>
-            <Input
-              id="day_obs"
-              value={formData.DAY_OBS}
-              onChange={(e) => onInputChange('DAY_OBS', e.target.value)}
-              className="bg-slate-800/60 border-blue-400/40 text-cyan-100 placeholder-cyan-400/50 focus:border-cyan-400/70 focus:ring-cyan-400/30 backdrop-blur-sm"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="date_obs" className="text-cyan-300 font-medium">Date OBS</Label>
-            <Input
-              id="date_obs"
-              type="datetime-local"
-              value={formData.DATE_OBS}
-              onChange={(e) => onInputChange('DATE_OBS', e.target.value)}
-              className="bg-slate-800/60 border-blue-400/40 text-cyan-100 placeholder-cyan-400/50 focus:border-cyan-400/70 focus:ring-cyan-400/30 backdrop-blur-sm"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="propid" className="text-cyan-300 font-medium">Proposal ID</Label>
-            <Input
-              id="propid"
-              value={formData.PROPID}
-              onChange={(e) => onInputChange('PROPID', e.target.value)}
-              className="bg-slate-800/60 border-blue-400/40 text-cyan-100 placeholder-cyan-400/50 focus:border-cyan-400/70 focus:ring-cyan-400/30 backdrop-blur-sm"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="instrume" className="text-cyan-300 font-medium">Instrument</Label>
-            <Input
-              id="instrume"
-              value={formData.INSTRUME}
-              onChange={(e) => onInputChange('INSTRUME', e.target.value)}
-              className="bg-slate-800/60 border-blue-400/40 text-cyan-100 placeholder-cyan-400/50 focus:border-cyan-400/70 focus:ring-cyan-400/30 backdrop-blur-sm"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="object" className="text-cyan-300 font-medium">Object</Label>
-            <Input
-              id="object"
-              value={formData.OBJECT}
-              onChange={(e) => onInputChange('OBJECT', e.target.value)}
-              className="bg-slate-800/60 border-blue-400/40 text-cyan-100 placeholder-cyan-400/50 focus:border-cyan-400/70 focus:ring-cyan-400/30 backdrop-blur-sm"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="siteid" className="text-cyan-300 font-medium">Site ID</Label>
-            <Input
-              id="siteid"
-              value={formData.SITEID}
-              onChange={(e) => onInputChange('SITEID', e.target.value)}
-              className="bg-slate-800/60 border-blue-400/40 text-cyan-100 placeholder-cyan-400/50 focus:border-cyan-400/70 focus:ring-cyan-400/30 backdrop-blur-sm"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="telid" className="text-cyan-300 font-medium">Telescope ID</Label>
-            <Input
-              id="telid"
-              value={formData.TELID}
-              onChange={(e) => onInputChange('TELID', e.target.value)}
-              className="bg-slate-800/60 border-blue-400/40 text-cyan-100 placeholder-cyan-400/50 focus:border-cyan-400/70 focus:ring-cyan-400/30 backdrop-blur-sm"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="exptime" className="text-cyan-300 font-medium">Exposure Time</Label>
-            <Input
-              id="exptime"
-              type="number"
-              step="0.1"
-              value={formData.EXPTIME}
-              onChange={(e) => onInputChange('EXPTIME', parseFloat(e.target.value))}
-              className="bg-slate-800/60 border-blue-400/40 text-cyan-100 placeholder-cyan-400/50 focus:border-cyan-400/70 focus:ring-cyan-400/30 backdrop-blur-sm"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="filter" className="text-cyan-300 font-medium">Filter</Label>
-            <Input
-              id="filter"
-              value={formData.FILTER}
-              onChange={(e) => onInputChange('FILTER', e.target.value)}
-              className="bg-slate-800/60 border-blue-400/40 text-cyan-100 placeholder-cyan-400/50 focus:border-cyan-400/70 focus:ring-cyan-400/30 backdrop-blur-sm"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="obstype" className="text-cyan-300 font-medium">Observation Type</Label>
-            <Input
-              id="obstype"
-              value={formData.OBSTYPE}
-              onChange={(e) => onInputChange('OBSTYPE', e.target.value)}
-              className="bg-slate-800/60 border-blue-400/40 text-cyan-100 placeholder-cyan-400/50 focus:border-cyan-400/70 focus:ring-cyan-400/30 backdrop-blur-sm"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="rlevel" className="text-cyan-300 font-medium">R Level</Label>
-            <Input
-              id="rlevel"
-              type="number"
-              value={formData.RLEVEL}
-              onChange={(e) => onInputChange('RLEVEL', parseInt(e.target.value))}
-              className="bg-slate-800/60 border-blue-400/40 text-cyan-100 placeholder-cyan-400/50 focus:border-cyan-400/70 focus:ring-cyan-400/30 backdrop-blur-sm"
-            />
-          </div>
+          {Object.entries(formData).map(([key, value]) => (
+            <div key={key} className="space-y-2">
+              <Label htmlFor={key} className="font-medium" style={{color: '#8DD8FF'}}>
+                {key.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+              </Label>
+              <Input
+                id={key}
+                type={typeof value === 'number' ? 'number' : key.includes('DATE') ? 'datetime-local' : 'text'}
+                value={value}
+                onChange={(e) => onInputChange(key, typeof value === 'number' ? parseFloat(e.target.value) || 0 : e.target.value)}
+                className="backdrop-blur-sm transition-all"
+                style={{
+                  backgroundColor: 'rgba(20, 20, 30, 0.6)',
+                  borderColor: 'rgba(78, 113, 255, 0.4)',
+                  color: '#BBFBFF'
+                }}
+              />
+            </div>
+          ))}
         </div>
       </CardContent>
     </Card>

@@ -35,83 +35,53 @@ interface HeaderDataCardProps {
 }
 
 const HeaderDataCard = ({ headerData, onHeaderChange }: HeaderDataCardProps) => {
+  const displayFields = ['TELESCOP', 'RA', 'DEC', 'AIRMASS', 'NAXIS1', 'NAXIS2'];
+  
   return (
-    <Card className="bg-slate-900/40 backdrop-blur-xl border border-cyan-400/30 shadow-2xl shadow-cyan-500/10 hover:shadow-cyan-500/20 transition-all duration-500">
-      <CardHeader className="bg-gradient-to-r from-slate-800/60 via-cyan-900/30 to-slate-800/60 border-b border-cyan-400/30 backdrop-blur-sm">
-        <CardTitle className="text-blue-200 flex items-center gap-3 text-xl">
-          <div className="p-2 rounded-lg bg-cyan-500/20 border border-cyan-400/40">
-            <Server className="w-5 h-5 text-cyan-300" />
+    <Card className="backdrop-blur-xl border shadow-2xl transition-all duration-500"
+          style={{
+            backgroundColor: 'rgba(20, 20, 30, 0.4)',
+            borderColor: 'rgba(141, 216, 255, 0.3)',
+            boxShadow: '0 25px 50px -12px rgba(141, 216, 255, 0.1)'
+          }}>
+      <CardHeader className="border-b backdrop-blur-sm"
+                  style={{
+                    background: 'linear-gradient(to right, rgba(20, 20, 30, 0.6), rgba(141, 216, 255, 0.3), rgba(20, 20, 30, 0.6))',
+                    borderColor: 'rgba(141, 216, 255, 0.3)'
+                  }}>
+        <CardTitle className="flex items-center gap-3 text-xl" style={{color: '#4E71FF'}}>
+          <div className="p-2 rounded-lg border" 
+               style={{backgroundColor: 'rgba(141, 216, 255, 0.2)', borderColor: 'rgba(141, 216, 255, 0.4)'}}>
+            <Server className="w-5 h-5" style={{color: '#8DD8FF'}} />
           </div>
           FITS Header Data
         </CardTitle>
-        <CardDescription className="text-cyan-200/80">
+        <CardDescription style={{color: 'rgba(141, 216, 255, 0.8)'}}>
           Additional header information for astronomical data processing
         </CardDescription>
       </CardHeader>
       <CardContent className="p-6 space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="telescop" className="text-blue-300 font-medium">Telescope</Label>
-            <Input
-              id="telescop"
-              value={headerData.TELESCOP}
-              onChange={(e) => onHeaderChange('TELESCOP', e.target.value)}
-              className="bg-slate-800/60 border-cyan-400/40 text-blue-100 placeholder-blue-400/50 focus:border-blue-400/70 focus:ring-blue-400/30 backdrop-blur-sm"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="ra" className="text-blue-300 font-medium">RA</Label>
-            <Input
-              id="ra"
-              type="number"
-              step="0.01"
-              value={headerData.RA}
-              onChange={(e) => onHeaderChange('RA', parseFloat(e.target.value))}
-              className="bg-slate-800/60 border-cyan-400/40 text-blue-100 placeholder-blue-400/50 focus:border-blue-400/70 focus:ring-blue-400/30 backdrop-blur-sm"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="dec" className="text-blue-300 font-medium">DEC</Label>
-            <Input
-              id="dec"
-              type="number"
-              step="0.01"
-              value={headerData.DEC}
-              onChange={(e) => onHeaderChange('DEC', parseFloat(e.target.value))}
-              className="bg-slate-800/60 border-cyan-400/40 text-blue-100 placeholder-blue-400/50 focus:border-blue-400/70 focus:ring-blue-400/30 backdrop-blur-sm"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="airmass" className="text-blue-300 font-medium">Airmass</Label>
-            <Input
-              id="airmass"
-              type="number"
-              step="0.01"
-              value={headerData.AIRMASS}
-              onChange={(e) => onHeaderChange('AIRMASS', parseFloat(e.target.value))}
-              className="bg-slate-800/60 border-cyan-400/40 text-blue-100 placeholder-blue-400/50 focus:border-blue-400/70 focus:ring-blue-400/30 backdrop-blur-sm"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="naxis1" className="text-blue-300 font-medium">NAXIS1</Label>
-            <Input
-              id="naxis1"
-              type="number"
-              value={headerData.NAXIS1}
-              onChange={(e) => onHeaderChange('NAXIS1', parseInt(e.target.value))}
-              className="bg-slate-800/60 border-cyan-400/40 text-blue-100 placeholder-blue-400/50 focus:border-blue-400/70 focus:ring-blue-400/30 backdrop-blur-sm"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="naxis2" className="text-blue-300 font-medium">NAXIS2</Label>
-            <Input
-              id="naxis2"
-              type="number"
-              value={headerData.NAXIS2}
-              onChange={(e) => onHeaderChange('NAXIS2', parseInt(e.target.value))}
-              className="bg-slate-800/60 border-cyan-400/40 text-blue-100 placeholder-blue-400/50 focus:border-blue-400/70 focus:ring-blue-400/30 backdrop-blur-sm"
-            />
-          </div>
+          {displayFields.map((field) => (
+            <div key={field} className="space-y-2">
+              <Label htmlFor={field} className="font-medium" style={{color: '#4E71FF'}}>
+                {field}
+              </Label>
+              <Input
+                id={field}
+                type={typeof headerData[field as keyof HeaderData] === 'number' ? 'number' : 'text'}
+                step={field === 'RA' || field === 'DEC' || field === 'AIRMASS' ? '0.01' : undefined}
+                value={headerData[field as keyof HeaderData]}
+                onChange={(e) => onHeaderChange(field, typeof headerData[field as keyof HeaderData] === 'number' ? parseFloat(e.target.value) : e.target.value)}
+                className="backdrop-blur-sm transition-all"
+                style={{
+                  backgroundColor: 'rgba(20, 20, 30, 0.6)',
+                  borderColor: 'rgba(141, 216, 255, 0.4)',
+                  color: '#4E71FF'
+                }}
+              />
+            </div>
+          ))}
         </div>
       </CardContent>
     </Card>

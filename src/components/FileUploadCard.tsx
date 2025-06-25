@@ -25,39 +25,63 @@ const FileUploadCard = ({
   onUpdateData
 }: FileUploadCardProps) => {
   return (
-    <Card className="bg-slate-900/40 backdrop-blur-xl border border-indigo-400/30 shadow-2xl shadow-indigo-500/10 hover:shadow-indigo-500/20 transition-all duration-500">
-      <CardHeader className="bg-gradient-to-r from-slate-800/60 via-indigo-900/30 to-slate-800/60 border-b border-indigo-400/30 backdrop-blur-sm">
-        <CardTitle className="text-indigo-200 flex items-center gap-3 text-xl">
-          <div className="p-2 rounded-lg bg-indigo-500/20 border border-indigo-400/40">
-            <Upload className="w-5 h-5 text-indigo-300" />
+    <Card className="backdrop-blur-xl border shadow-2xl transition-all duration-500"
+          style={{
+            backgroundColor: 'rgba(20, 20, 30, 0.4)',
+            borderColor: 'rgba(84, 9, 218, 0.3)',
+            boxShadow: '0 25px 50px -12px rgba(84, 9, 218, 0.1)'
+          }}>
+      <CardHeader className="border-b backdrop-blur-sm"
+                  style={{
+                    background: 'linear-gradient(to right, rgba(20, 20, 30, 0.6), rgba(84, 9, 218, 0.3), rgba(20, 20, 30, 0.6))',
+                    borderColor: 'rgba(84, 9, 218, 0.3)'
+                  }}>
+        <CardTitle className="flex items-center gap-3 text-xl" style={{color: '#BBFBFF'}}>
+          <div className="p-2 rounded-lg border" 
+               style={{backgroundColor: 'rgba(84, 9, 218, 0.2)', borderColor: 'rgba(84, 9, 218, 0.4)'}}>
+            <Upload className="w-5 h-5" style={{color: '#5409DA'}} />
           </div>
           Cosmic File Upload & Processing
         </CardTitle>
-        <CardDescription className="text-indigo-200/80">
+        <CardDescription style={{color: 'rgba(187, 251, 255, 0.8)'}}>
           Upload your astronomical data and update headers for deep space analysis
         </CardDescription>
       </CardHeader>
       <CardContent className="p-6 space-y-6">
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="file-upload" className="text-indigo-300 font-medium">Select Astronomical Data File</Label>
+            <Label htmlFor="file-upload" className="font-medium" style={{color: '#5409DA'}}>Select Astronomical Data File</Label>
             <Input
               id="file-upload"
               type="file"
               onChange={onFileUpload}
-              className="bg-slate-800/60 border-indigo-400/40 text-indigo-100 file:bg-gradient-to-r file:from-indigo-600/40 file:to-blue-600/40 file:text-indigo-200 file:border-0 file:rounded-lg file:px-4 file:py-2 file:mr-4 hover:file:from-indigo-600/60 hover:file:to-blue-600/60 backdrop-blur-sm transition-all"
+              className="backdrop-blur-sm transition-all file:border-0 file:rounded-lg file:px-4 file:py-2 file:mr-4"
+              style={{
+                backgroundColor: 'rgba(20, 20, 30, 0.6)',
+                borderColor: 'rgba(84, 9, 218, 0.4)',
+                color: '#5409DA'
+              }}
               accept=".fits,.fit,.fts"
             />
           </div>
 
           {selectedFile && (
-            <div className="bg-gradient-to-r from-slate-800/40 to-indigo-900/40 border border-indigo-400/40 rounded-xl p-4 backdrop-blur-sm">
+            <div className="border rounded-xl p-4 backdrop-blur-sm"
+                 style={{
+                   background: 'linear-gradient(to right, rgba(20, 20, 30, 0.4), rgba(84, 9, 218, 0.4))',
+                   borderColor: 'rgba(84, 9, 218, 0.4)'
+                 }}>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <CheckCircle className="w-5 h-5 text-emerald-400" />
-                  <span className="text-indigo-200 font-medium">Selected: {selectedFile.name}</span>
+                  <CheckCircle className="w-5 h-5" style={{color: '#8DD8FF'}} />
+                  <span className="font-medium" style={{color: '#BBFBFF'}}>Selected: {selectedFile.name}</span>
                 </div>
-                <Badge variant="secondary" className="bg-gradient-to-r from-indigo-600/30 to-blue-600/30 text-indigo-200 border-indigo-400/40 px-3 py-1">
+                <Badge variant="secondary" className="px-3 py-1"
+                       style={{
+                         background: 'linear-gradient(to right, rgba(84, 9, 218, 0.3), rgba(78, 113, 255, 0.3))',
+                         color: '#BBFBFF',
+                         borderColor: 'rgba(84, 9, 218, 0.4)'
+                       }}>
                   {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
                 </Badge>
               </div>
@@ -67,24 +91,32 @@ const FileUploadCard = ({
           {isUploading && uploadProgress > 0 && (
             <div className="space-y-3">
               <div className="flex justify-between text-sm">
-                <span className="text-indigo-300 font-medium">Cosmic Data Processing</span>
-                <span className="text-blue-400 font-bold">{uploadProgress}%</span>
+                <span className="font-medium" style={{color: '#5409DA'}}>Cosmic Data Processing</span>
+                <span className="font-bold" style={{color: '#4E71FF'}}>{uploadProgress}%</span>
               </div>
-              <Progress value={uploadProgress} className="bg-slate-800/60 [&>div]:bg-gradient-to-r [&>div]:from-blue-500 [&>div]:to-cyan-500 h-3 rounded-full" />
+              <Progress value={uploadProgress} className="h-3 rounded-full"
+                       style={{backgroundColor: 'rgba(20, 20, 30, 0.6)'}} />
             </div>
           )}
 
-          <Separator className="bg-gradient-to-r from-transparent via-indigo-400/40 to-transparent h-px" />
+          <Separator className="h-px"
+                    style={{background: 'linear-gradient(to right, transparent, rgba(84, 9, 218, 0.4), transparent)'}} />
 
           <div className="flex flex-col sm:flex-row gap-4">
             <Button
               onClick={onUpdateData}
               disabled={!selectedFile || isUploading}
-              className="flex-1 bg-gradient-to-r from-blue-600/40 to-cyan-600/40 hover:from-blue-600/60 hover:to-cyan-600/60 text-white border border-blue-400/40 backdrop-blur-sm transition-all duration-300 shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40 text-lg py-6"
+              className="flex-1 border backdrop-blur-sm transition-all duration-300 shadow-lg text-lg py-6"
+              style={{
+                background: 'linear-gradient(to right, rgba(78, 113, 255, 0.4), rgba(141, 216, 255, 0.4))',
+                borderColor: 'rgba(78, 113, 255, 0.4)',
+                color: 'white'
+              }}
             >
               {isUploading ? (
                 <div className="flex items-center gap-3">
-                  <div className="w-5 h-5 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin" />
+                  <div className="w-5 h-5 border-2 border-t-transparent rounded-full animate-spin" 
+                       style={{borderColor: '#8DD8FF'}} />
                   Processing Cosmic Data...
                 </div>
               ) : (
@@ -97,19 +129,27 @@ const FileUploadCard = ({
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
-            <div className="bg-gradient-to-br from-slate-800/40 to-blue-900/40 border border-blue-400/40 rounded-xl p-4 backdrop-blur-sm hover:from-slate-800/60 hover:to-blue-900/60 transition-all duration-300">
+            <div className="border rounded-xl p-4 backdrop-blur-sm transition-all duration-300"
+                 style={{
+                   background: 'linear-gradient(to br, rgba(20, 20, 30, 0.4), rgba(78, 113, 255, 0.4))',
+                   borderColor: 'rgba(78, 113, 255, 0.4)'
+                 }}>
               <div className="flex items-center gap-3 mb-2">
-                <Server className="w-5 h-5 text-blue-400" />
-                <span className="font-semibold text-blue-300">MinIO Storage</span>
+                <Server className="w-5 h-5" style={{color: '#4E71FF'}} />
+                <span className="font-semibold" style={{color: '#4E71FF'}}>MinIO Storage</span>
               </div>
-              <p className="text-sm text-blue-200/80">Port 9000 • Cosmic Object Storage</p>
+              <p className="text-sm" style={{color: 'rgba(78, 113, 255, 0.8)'}}>Port 9000 • Cosmic Object Storage</p>
             </div>
-            <div className="bg-gradient-to-br from-slate-800/40 to-cyan-900/40 border border-cyan-400/40 rounded-xl p-4 backdrop-blur-sm hover:from-slate-800/60 hover:to-cyan-900/60 transition-all duration-300">
+            <div className="border rounded-xl p-4 backdrop-blur-sm transition-all duration-300"
+                 style={{
+                   background: 'linear-gradient(to br, rgba(20, 20, 30, 0.4), rgba(141, 216, 255, 0.4))',
+                   borderColor: 'rgba(141, 216, 255, 0.4)'
+                 }}>
               <div className="flex items-center gap-3 mb-2">
-                <Database className="w-5 h-5 text-cyan-400" />
-                <span className="font-semibold text-cyan-300">Science Archive</span>
+                <Database className="w-5 h-5" style={{color: '#8DD8FF'}} />
+                <span className="font-semibold" style={{color: '#8DD8FF'}}>Science Archive</span>
               </div>
-              <p className="text-sm text-cyan-200/80">Astronomical Metadata Repository</p>
+              <p className="text-sm" style={{color: 'rgba(141, 216, 255, 0.8)'}}>Astronomical Metadata Repository</p>
             </div>
           </div>
         </div>

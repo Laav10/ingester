@@ -3,18 +3,15 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Upload, Database, Rocket, FileText } from 'lucide-react';
-import { useToast } from "@/hooks/use-toast";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Upload, Database, Server, CheckCircle, AlertCircle } from "lucide-react";
+import { toast } from "sonner";
 
 const Index = () => {
-  const { toast } = useToast();
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [isProcessing, setIsProcessing] = useState(false);
-  
-  // Form data state
   const [formData, setFormData] = useState({
     basename: "sample_image_20250616_145810",
     DAY_OBS: "20250616",
@@ -30,21 +27,46 @@ const Index = () => {
     L1PUBDAT: "2025-07-01T00:00:00",
     OBSTYPE: "EXPOSE",
     BLKUID: 1,
-    REQNUM: 1,
-    // Headers data
+    REQNUM: 1
+  });
+
+  const [headerData, setHeaderData] = useState({
     SIMPLE: true,
     BITPIX: -32,
     NAXIS: 2,
     NAXIS1: 1024,
     NAXIS2: 1024,
+    OBJECT: "Sample Target",
     TELESCOP: "Sample Telescope",
+    INSTRUME: "test-instrument",
+    FILTER: "V",
+    EXPTIME: 60.0,
+    "DATE-OBS": "2025-06-16T14:58:10",
     RA: 123.45,
     DEC: 67.89,
-    AIRMASS: 1.23
+    AIRMASS: 1.23,
+    PROPID: "test-proposal",
+    SITEID: "TST",
+    TELID: "T01",
+    OBSTYPE: "EXPOSE",
+    REQNUM: 1,
+    BLKUID: 1,
+    RLEVEL: 0
   });
+
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [isUploading, setIsUploading] = useState(false);
 
   const handleInputChange = (field: string, value: any) => {
     setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleHeaderChange = (field: string, value: any) => {
+    setHeaderData(prev => ({
       ...prev,
       [field]: value
     }));
@@ -54,448 +76,377 @@ const Index = () => {
     const file = event.target.files?.[0];
     if (file) {
       setSelectedFile(file);
-      toast({
-        title: "File Selected",
-        description: `${file.name} is ready for processing`,
-      });
+      toast.success(`File "${file.name}" selected for upload`);
     }
   };
 
   const handleUpdateData = async () => {
     if (!selectedFile) {
-      toast({
-        title: "No File Selected",
-        description: "Please select a file to process",
-        variant: "destructive",
-      });
+      toast.error("Please select a file first");
       return;
     }
 
-    setIsProcessing(true);
-    
-    try {
-      // Simulate header modification process
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Create the metadata structure
-      const metadata = {
-        basename: formData.basename,
-        DAY_OBS: formData.DAY_OBS,
-        DATE_OBS: formData.DATE_OBS,
-        PROPID: formData.PROPID,
-        INSTRUME: formData.INSTRUME,
-        OBJECT: formData.OBJECT,
-        RLEVEL: formData.RLEVEL,
-        SITEID: formData.SITEID,
-        TELID: formData.TELID,
-        EXPTIME: formData.EXPTIME,
-        FILTER: formData.FILTER,
-        L1PUBDAT: formData.L1PUBDAT,
-        OBSTYPE: formData.OBSTYPE,
-        BLKUID: formData.BLKUID,
-        REQNUM: formData.REQNUM,
-        area: {
-          type: "Polygon",
-          coordinates: [[
-            [123.40, 67.84],
-            [123.50, 67.84],
-            [123.50, 67.94],
-            [123.40, 67.94],
-            [123.40, 67.84]
-          ]]
-        },
-        headers: {
-          SIMPLE: formData.SIMPLE,
-          BITPIX: formData.BITPIX,
-          NAXIS: formData.NAXIS,
-          NAXIS1: formData.NAXIS1,
-          NAXIS2: formData.NAXIS2,
-          OBJECT: formData.OBJECT,
-          TELESCOP: formData.TELESCOP,
-          INSTRUME: formData.INSTRUME,
-          FILTER: formData.FILTER,
-          EXPTIME: formData.EXPTIME,
-          "DATE-OBS": formData.DATE_OBS,
-          RA: formData.RA,
-          DEC: formData.DEC,
-          AIRMASS: formData.AIRMASS,
-          PROPID: formData.PROPID,
-          SITEID: formData.SITEID,
-          TELID: formData.TELID,
-          OBSTYPE: formData.OBSTYPE,
-          REQNUM: formData.REQNUM,
-          BLKUID: formData.BLKUID,
-          RLEVEL: formData.RLEVEL
-        }
-      };
+    setIsUploading(true);
+    setUploadProgress(0);
 
-      console.log('Processing file with metadata:', metadata);
-      
+    try {
+      // Simulate header modification
+      const progressInterval = setInterval(() => {
+        setUploadProgress(prev => {
+          if (prev >= 90) {
+            clearInterval(progressInterval);
+            return 90;
+          }
+          return prev + 10;
+        });
+      }, 200);
+
+      // Simulate API calls
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
       // Simulate MinIO upload (port 9000)
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Simulate science archive upload
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      toast({
-        title: "Data Processing Complete",
-        description: "File headers updated and uploaded to MinIO and Science Archive successfully",
+      console.log("Uploading to MinIO on port 9000...", {
+        file: selectedFile.name,
+        metadata: formData,
+        headers: headerData
       });
+
+      // Simulate Science Archive upload
+      console.log("Uploading to Science Archive...", {
+        file: selectedFile.name,
+        updatedHeaders: headerData
+      });
+
+      setUploadProgress(100);
       
+      toast.success("File header updated and uploaded successfully!", {
+        description: `${selectedFile.name} uploaded to MinIO and Science Archive`
+      });
+
     } catch (error) {
-      toast({
-        title: "Processing Failed",
-        description: "There was an error processing your data",
-        variant: "destructive",
+      toast.error("Upload failed", {
+        description: "Please try again or contact support"
       });
     } finally {
-      setIsProcessing(false);
+      setIsUploading(false);
+      setTimeout(() => setUploadProgress(0), 2000);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center">
-                <Rocket className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-xl font-bold text-gray-900">Physical Research Laboratory</h1>
-                <p className="text-sm text-gray-500">Data Ingestion System</p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-2 text-sm text-gray-600">
-              <Database className="w-4 h-4" />
-              <span>Science Archive Integration</span>
-            </div>
-          </div>
+    <div className="min-h-screen bg-slate-800/50 text-white p-6">
+      <div className="max-w-7xl mx-auto space-y-8">
+        {/* Header */}
+        <div className="text-center space-y-4 mb-12">
+          <h1 className="text-4xl font-bold text-white">Physical Research Laboratory</h1>
+          <p className="text-xl text-blue-200">Data Ingestion System</p>
+          <div className="w-24 h-1 bg-blue-500/30 mx-auto rounded-full"></div>
         </div>
-      </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          
-          {/* File Upload Section */}
-          <div className="lg:col-span-1">
-            <Card className="h-fit">
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Upload className="w-5 h-5" />
-                  <span>File Upload</span>
-                </CardTitle>
-                <CardDescription>
-                  Select the file to process and update headers
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-indigo-400 transition-colors">
-                  <input
-                    type="file"
-                    onChange={handleFileUpload}
-                    className="hidden"
-                    id="file-upload"
-                    accept=".fits,.fit,.fts"
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Metadata Fields */}
+          <Card className="bg-slate-900/50 border-blue-500/30 border">
+            <CardHeader className="bg-slate-700/50 border-b border-blue-500/30">
+              <CardTitle className="text-white flex items-center gap-2">
+                <Database className="w-5 h-5 text-blue-400" />
+                Observation Metadata
+              </CardTitle>
+              <CardDescription className="text-blue-200">
+                Configure observation parameters and metadata
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="p-6 space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="basename" className="text-blue-300">Basename</Label>
+                  <Input
+                    id="basename"
+                    value={formData.basename}
+                    onChange={(e) => handleInputChange('basename', e.target.value)}
+                    className="bg-slate-800/50 border-blue-500/30 text-white placeholder-blue-200/50"
                   />
-                  <label htmlFor="file-upload" className="cursor-pointer">
-                    <FileText className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-                    <p className="text-sm text-gray-600">Click to select file</p>
-                    <p className="text-xs text-gray-400 mt-1">FITS files supported</p>
-                  </label>
                 </div>
-                
-                {selectedFile && (
-                  <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-                    <p className="text-sm font-medium text-green-800">File Selected:</p>
-                    <p className="text-sm text-green-600">{selectedFile.name}</p>
-                    <p className="text-xs text-green-500">Size: {(selectedFile.size / 1024 / 1024).toFixed(2)} MB</p>
-                  </div>
-                )}
-
-                <Button 
-                  onClick={handleUpdateData}
-                  disabled={!selectedFile || isProcessing}
-                  className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
-                >
-                  {isProcessing ? "Processing..." : "Update Data"}
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Metadata Form */}
-          <div className="lg:col-span-2">
-            <Card>
-              <CardHeader>
-                <CardTitle>Observation Metadata</CardTitle>
-                <CardDescription>
-                  Configure the metadata that will be written to the file headers
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  
-                  {/* Basic Information */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">Basic Information</h3>
-                    
-                    <div>
-                      <Label htmlFor="basename">Basename</Label>
-                      <Input
-                        id="basename"
-                        value={formData.basename}
-                        onChange={(e) => handleInputChange('basename', e.target.value)}
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="day_obs">Day of Observation</Label>
-                      <Input
-                        id="day_obs"
-                        value={formData.DAY_OBS}
-                        onChange={(e) => handleInputChange('DAY_OBS', e.target.value)}
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="date_obs">Date of Observation</Label>
-                      <Input
-                        id="date_obs"
-                        type="datetime-local"
-                        value={formData.DATE_OBS}
-                        onChange={(e) => handleInputChange('DATE_OBS', e.target.value)}
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="propid">Proposal ID</Label>
-                      <Input
-                        id="propid"
-                        value={formData.PROPID}
-                        onChange={(e) => handleInputChange('PROPID', e.target.value)}
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="instrume">Instrument</Label>
-                      <Input
-                        id="instrume"
-                        value={formData.INSTRUME}
-                        onChange={(e) => handleInputChange('INSTRUME', e.target.value)}
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="object">Object</Label>
-                      <Input
-                        id="object"
-                        value={formData.OBJECT}
-                        onChange={(e) => handleInputChange('OBJECT', e.target.value)}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Technical Parameters */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">Technical Parameters</h3>
-                    
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="rlevel">R Level</Label>
-                        <Input
-                          id="rlevel"
-                          type="number"
-                          value={formData.RLEVEL}
-                          onChange={(e) => handleInputChange('RLEVEL', parseInt(e.target.value))}
-                        />
-                      </div>
-
-                      <div>
-                        <Label htmlFor="siteid">Site ID</Label>
-                        <Input
-                          id="siteid"
-                          value={formData.SITEID}
-                          onChange={(e) => handleInputChange('SITEID', e.target.value)}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="telid">Telescope ID</Label>
-                        <Input
-                          id="telid"
-                          value={formData.TELID}
-                          onChange={(e) => handleInputChange('TELID', e.target.value)}
-                        />
-                      </div>
-
-                      <div>
-                        <Label htmlFor="exptime">Exposure Time</Label>
-                        <Input
-                          id="exptime"
-                          type="number"
-                          step="0.1"
-                          value={formData.EXPTIME}
-                          onChange={(e) => handleInputChange('EXPTIME', parseFloat(e.target.value))}
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <Label htmlFor="filter">Filter</Label>
-                      <Select value={formData.FILTER} onValueChange={(value) => handleInputChange('FILTER', value)}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="V">V (Visual)</SelectItem>
-                          <SelectItem value="B">B (Blue)</SelectItem>
-                          <SelectItem value="R">R (Red)</SelectItem>
-                          <SelectItem value="I">I (Infrared)</SelectItem>
-                          <SelectItem value="U">U (Ultraviolet)</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div>
-                      <Label htmlFor="l1pubdat">L1 Publication Date</Label>
-                      <Input
-                        id="l1pubdat"
-                        type="datetime-local"
-                        value={formData.L1PUBDAT}
-                        onChange={(e) => handleInputChange('L1PUBDAT', e.target.value)}
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="obstype">Observation Type</Label>
-                      <Select value={formData.OBSTYPE} onValueChange={(value) => handleInputChange('OBSTYPE', value)}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="EXPOSE">Exposure</SelectItem>
-                          <SelectItem value="BIAS">Bias</SelectItem>
-                          <SelectItem value="DARK">Dark</SelectItem>
-                          <SelectItem value="FLAT">Flat</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="blkuid">Block UID</Label>
-                        <Input
-                          id="blkuid"
-                          type="number"
-                          value={formData.BLKUID}
-                          onChange={(e) => handleInputChange('BLKUID', parseInt(e.target.value))}
-                        />
-                      </div>
-
-                      <div>
-                        <Label htmlFor="reqnum">Request Number</Label>
-                        <Input
-                          id="reqnum"
-                          type="number"
-                          value={formData.REQNUM}
-                          onChange={(e) => handleInputChange('REQNUM', parseInt(e.target.value))}
-                        />
-                      </div>
-                    </div>
-                  </div>
+                <div className="space-y-2">
+                  <Label htmlFor="day_obs" className="text-blue-300">Day OBS</Label>
+                  <Input
+                    id="day_obs"
+                    value={formData.DAY_OBS}
+                    onChange={(e) => handleInputChange('DAY_OBS', e.target.value)}
+                    className="bg-slate-800/50 border-blue-500/30 text-white placeholder-blue-200/50"
+                  />
                 </div>
-
-                {/* Advanced Headers Section */}
-                <div className="mt-8 pt-6 border-t">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Advanced Header Parameters</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                      <Label htmlFor="telescop">Telescope</Label>
-                      <Input
-                        id="telescop"
-                        value={formData.TELESCOP}
-                        onChange={(e) => handleInputChange('TELESCOP', e.target.value)}
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="ra">Right Ascension</Label>
-                      <Input
-                        id="ra"
-                        type="number"
-                        step="0.00001"
-                        value={formData.RA}
-                        onChange={(e) => handleInputChange('RA', parseFloat(e.target.value))}
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="dec">Declination</Label>
-                      <Input
-                        id="dec"
-                        type="number"
-                        step="0.00001"
-                        value={formData.DEC}
-                        onChange={(e) => handleInputChange('DEC', parseFloat(e.target.value))}
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="airmass">Airmass</Label>
-                      <Input
-                        id="airmass"
-                        type="number"
-                        step="0.01"
-                        value={formData.AIRMASS}
-                        onChange={(e) => handleInputChange('AIRMASS', parseFloat(e.target.value))}
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="naxis1">NAXIS1</Label>
-                      <Input
-                        id="naxis1"
-                        type="number"
-                        value={formData.NAXIS1}
-                        onChange={(e) => handleInputChange('NAXIS1', parseInt(e.target.value))}
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="naxis2">NAXIS2</Label>
-                      <Input
-                        id="naxis2"
-                        type="number"
-                        value={formData.NAXIS2}
-                        onChange={(e) => handleInputChange('NAXIS2', parseInt(e.target.value))}
-                      />
-                    </div>
-                  </div>
+                <div className="space-y-2">
+                  <Label htmlFor="date_obs" className="text-blue-300">Date OBS</Label>
+                  <Input
+                    id="date_obs"
+                    type="datetime-local"
+                    value={formData.DATE_OBS}
+                    onChange={(e) => handleInputChange('DATE_OBS', e.target.value)}
+                    className="bg-slate-800/50 border-blue-500/30 text-white placeholder-blue-200/50"
+                  />
                 </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-
-        {/* Status Section */}
-        {isProcessing && (
-          <Card className="mt-8">
-            <CardContent className="pt-6">
-              <div className="flex items-center space-x-4">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
-                <div>
-                  <p className="font-medium text-gray-900">Processing Data...</p>
-                  <p className="text-sm text-gray-600">Updating headers and uploading to MinIO (port 9000) and Science Archive</p>
+                <div className="space-y-2">
+                  <Label htmlFor="propid" className="text-blue-300">Proposal ID</Label>
+                  <Input
+                    id="propid"
+                    value={formData.PROPID}
+                    onChange={(e) => handleInputChange('PROPID', e.target.value)}
+                    className="bg-slate-800/50 border-blue-500/30 text-white placeholder-blue-200/50"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="instrume" className="text-blue-300">Instrument</Label>
+                  <Input
+                    id="instrume"
+                    value={formData.INSTRUME}
+                    onChange={(e) => handleInputChange('INSTRUME', e.target.value)}
+                    className="bg-slate-800/50 border-blue-500/30 text-white placeholder-blue-200/50"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="object" className="text-blue-300">Object</Label>
+                  <Input
+                    id="object"
+                    value={formData.OBJECT}
+                    onChange={(e) => handleInputChange('OBJECT', e.target.value)}
+                    className="bg-slate-800/50 border-blue-500/30 text-white placeholder-blue-200/50"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="siteid" className="text-blue-300">Site ID</Label>
+                  <Input
+                    id="siteid"
+                    value={formData.SITEID}
+                    onChange={(e) => handleInputChange('SITEID', e.target.value)}
+                    className="bg-slate-800/50 border-blue-500/30 text-white placeholder-blue-200/50"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="telid" className="text-blue-300">Telescope ID</Label>
+                  <Input
+                    id="telid"
+                    value={formData.TELID}
+                    onChange={(e) => handleInputChange('TELID', e.target.value)}
+                    className="bg-slate-800/50 border-blue-500/30 text-white placeholder-blue-200/50"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="exptime" className="text-blue-300">Exposure Time</Label>
+                  <Input
+                    id="exptime"
+                    type="number"
+                    step="0.1"
+                    value={formData.EXPTIME}
+                    onChange={(e) => handleInputChange('EXPTIME', parseFloat(e.target.value))}
+                    className="bg-slate-800/50 border-blue-500/30 text-white placeholder-blue-200/50"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="filter" className="text-blue-300">Filter</Label>
+                  <Input
+                    id="filter"
+                    value={formData.FILTER}
+                    onChange={(e) => handleInputChange('FILTER', e.target.value)}
+                    className="bg-slate-800/50 border-blue-500/30 text-white placeholder-blue-200/50"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="obstype" className="text-blue-300">Observation Type</Label>
+                  <Input
+                    id="obstype"
+                    value={formData.OBSTYPE}
+                    onChange={(e) => handleInputChange('OBSTYPE', e.target.value)}
+                    className="bg-slate-800/50 border-blue-500/30 text-white placeholder-blue-200/50"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="rlevel" className="text-blue-300">R Level</Label>
+                  <Input
+                    id="rlevel"
+                    type="number"
+                    value={formData.RLEVEL}
+                    onChange={(e) => handleInputChange('RLEVEL', parseInt(e.target.value))}
+                    className="bg-slate-800/50 border-blue-500/30 text-white placeholder-blue-200/50"
+                  />
                 </div>
               </div>
             </CardContent>
           </Card>
-        )}
+
+          {/* Header Data */}
+          <Card className="bg-slate-900/50 border-blue-500/30 border">
+            <CardHeader className="bg-slate-700/50 border-b border-blue-500/30">
+              <CardTitle className="text-white flex items-center gap-2">
+                <Server className="w-5 h-5 text-blue-400" />
+                FITS Header Data
+              </CardTitle>
+              <CardDescription className="text-blue-200">
+                Additional header information for the FITS file
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="p-6 space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="telescop" className="text-blue-300">Telescope</Label>
+                  <Input
+                    id="telescop"
+                    value={headerData.TELESCOP}
+                    onChange={(e) => handleHeaderChange('TELESCOP', e.target.value)}
+                    className="bg-slate-800/50 border-blue-500/30 text-white placeholder-blue-200/50"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="ra" className="text-blue-300">RA</Label>
+                  <Input
+                    id="ra"
+                    type="number"
+                    step="0.01"
+                    value={headerData.RA}
+                    onChange={(e) => handleHeaderChange('RA', parseFloat(e.target.value))}
+                    className="bg-slate-800/50 border-blue-500/30 text-white placeholder-blue-200/50"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="dec" className="text-blue-300">DEC</Label>
+                  <Input
+                    id="dec"
+                    type="number"
+                    step="0.01"
+                    value={headerData.DEC}
+                    onChange={(e) => handleHeaderChange('DEC', parseFloat(e.target.value))}
+                    className="bg-slate-800/50 border-blue-500/30 text-white placeholder-blue-200/50"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="airmass" className="text-blue-300">Airmass</Label>
+                  <Input
+                    id="airmass"
+                    type="number"
+                    step="0.01"
+                    value={headerData.AIRMASS}
+                    onChange={(e) => handleHeaderChange('AIRMASS', parseFloat(e.target.value))}
+                    className="bg-slate-800/50 border-blue-500/30 text-white placeholder-blue-200/50"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="naxis1" className="text-blue-300">NAXIS1</Label>
+                  <Input
+                    id="naxis1"
+                    type="number"
+                    value={headerData.NAXIS1}
+                    onChange={(e) => handleHeaderChange('NAXIS1', parseInt(e.target.value))}
+                    className="bg-slate-800/50 border-blue-500/30 text-white placeholder-blue-200/50"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="naxis2" className="text-blue-300">NAXIS2</Label>
+                  <Input
+                    id="naxis2"
+                    type="number"
+                    value={headerData.NAXIS2}
+                    onChange={(e) => handleHeaderChange('NAXIS2', parseInt(e.target.value))}
+                    className="bg-slate-800/50 border-blue-500/30 text-white placeholder-blue-200/50"
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* File Upload and Actions */}
+        <Card className="bg-slate-900/50 border-blue-500/30 border">
+          <CardHeader className="bg-slate-700/50 border-b border-blue-500/30">
+            <CardTitle className="text-white flex items-center gap-2">
+              <Upload className="w-5 h-5 text-blue-400" />
+              File Upload & Processing
+            </CardTitle>
+            <CardDescription className="text-blue-200">
+              Upload your data file and update headers
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="p-6 space-y-6">
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="file-upload" className="text-blue-300">Select File</Label>
+                <Input
+                  id="file-upload"
+                  type="file"
+                  onChange={handleFileUpload}
+                  className="bg-slate-800/50 border-blue-500/30 text-white file:bg-blue-600/30 file:text-blue-200 file:border-0 file:rounded file:px-4 file:py-2 file:mr-4 hover:file:bg-blue-600/50"
+                  accept=".fits,.fit,.fts"
+                />
+              </div>
+
+              {selectedFile && (
+                <div className="bg-slate-800/50 border border-blue-500/30 rounded-lg p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-green-400" />
+                      <span className="text-blue-200">Selected: {selectedFile.name}</span>
+                    </div>
+                    <Badge variant="secondary" className="bg-blue-600/30 text-blue-200 border-blue-500/30">
+                      {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
+                    </Badge>
+                  </div>
+                </div>
+              )}
+
+              {isUploading && uploadProgress > 0 && (
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-blue-300">Upload Progress</span>
+                    <span className="text-blue-400">{uploadProgress}%</span>
+                  </div>
+                  <Progress value={uploadProgress} className="bg-slate-800/50 [&>div]:bg-blue-500" />
+                </div>
+              )}
+
+              <Separator className="bg-blue-500/30" />
+
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Button
+                  onClick={handleUpdateData}
+                  disabled={!selectedFile || isUploading}
+                  className="flex-1 bg-blue-600/30 hover:bg-blue-600/50 text-white border border-blue-500/30 transition-colors"
+                >
+                  {isUploading ? (
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
+                      Processing...
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <Upload className="w-4 h-4" />
+                      Update Data
+                    </div>
+                  )}
+                </Button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
+                <div className="bg-slate-800/50 border border-blue-500/30 rounded-lg p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Server className="w-4 h-4 text-blue-400" />
+                    <span className="font-medium text-blue-300">MinIO Storage</span>
+                  </div>
+                  <p className="text-sm text-blue-200">Port 9000 • Object Storage</p>
+                </div>
+                <div className="bg-slate-800/50 border border-blue-500/30 rounded-lg p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Database className="w-4 h-4 text-blue-400" />
+                    <span className="font-medium text-blue-300">Science Archive</span>
+                  </div>
+                  <p className="text-sm text-blue-200">Metadata Repository</p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Status Footer */}
+        <div className="text-center text-blue-200/70 text-sm">
+          <p>Physical Research Laboratory - Data Ingestion System v1.0</p>
+        </div>
       </div>
     </div>
   );

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { toast } from "sonner";
 import SpaceBackground from '@/components/SpaceBackground';
@@ -24,7 +23,8 @@ const Index = () => {
     L1PUBDAT: "2025-07-01T00:00:00",
     OBSTYPE: "EXPOSE",
     BLKUID: 1,
-    REQNUM: 1
+    REQNUM: 1,
+    OBSERVER: "Dr. Astronomer"
   });
 
   const [headerData, setHeaderData] = useState({
@@ -48,7 +48,10 @@ const Index = () => {
     OBSTYPE: "EXPOSE",
     REQNUM: 1,
     BLKUID: 1,
-    RLEVEL: 0
+    RLEVEL: 0,
+    OBSERVER: "Dr. Astronomer",
+    DAY_OBS: "20250616",
+    L1PUBDAT: "2025-07-01T00:00:00"
   });
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -60,6 +63,22 @@ const Index = () => {
       ...prev,
       [field]: value
     }));
+    
+    // Synchronize with header data for common fields
+    if (['OBJECT', 'INSTRUME', 'FILTER', 'EXPTIME', 'PROPID', 'SITEID', 'TELID', 'OBSTYPE', 'REQNUM', 'BLKUID', 'RLEVEL', 'OBSERVER', 'DAY_OBS', 'L1PUBDAT'].includes(field)) {
+      setHeaderData(prev => ({
+        ...prev,
+        [field]: value
+      }));
+    }
+    
+    // Handle DATE_OBS to DATE-OBS mapping
+    if (field === 'DATE_OBS') {
+      setHeaderData(prev => ({
+        ...prev,
+        'DATE-OBS': value
+      }));
+    }
   };
 
   const handleHeaderChange = (field: string, value: any) => {
@@ -67,6 +86,22 @@ const Index = () => {
       ...prev,
       [field]: value
     }));
+    
+    // Synchronize with form data for common fields
+    if (['OBJECT', 'INSTRUME', 'FILTER', 'EXPTIME', 'PROPID', 'SITEID', 'TELID', 'OBSTYPE', 'REQNUM', 'BLKUID', 'RLEVEL', 'OBSERVER', 'DAY_OBS', 'L1PUBDAT'].includes(field)) {
+      setFormData(prev => ({
+        ...prev,
+        [field]: value
+      }));
+    }
+    
+    // Handle DATE-OBS to DATE_OBS mapping
+    if (field === 'DATE-OBS') {
+      setFormData(prev => ({
+        ...prev,
+        'DATE_OBS': value
+      }));
+    }
   };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -87,7 +122,24 @@ const Index = () => {
     setUploadProgress(0);
 
     try {
-      // Simulate header modification
+      // Create metadata JSON file with current form data
+      const metadataPayload = {
+        metadata: formData,
+        header_data: headerData
+      };
+
+      // Create a temporary file to store the metadata
+      const metadataBlob = new Blob([JSON.stringify(metadataPayload, null, 2)], {
+        type: 'application/json'
+      });
+      const metadataFile = new File([metadataBlob], 'metadata.json', { type: 'application/json' });
+
+      // Create FormData to send both files
+      const formDataToSend = new FormData();
+      formDataToSend.append('fits_file', selectedFile);
+      formDataToSend.append('metadata_file', metadataFile);
+
+      // Simulate progress updates
       const progressInterval = setInterval(() => {
         setUploadProgress(prev => {
           if (prev >= 90) {
@@ -98,31 +150,32 @@ const Index = () => {
         });
       }, 200);
 
-      // Simulate API calls
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
-      // Simulate MinIO upload (port 9000)
-      console.log("Uploading to MinIO on port 9000...", {
-        file: selectedFile.name,
-        metadata: formData,
-        headers: headerData
+      // Call backend API to process the files
+      const response = await fetch('http://localhost:3001/api/ingest', {
+        method: 'POST',
+        body: formDataToSend
       });
 
-      // Simulate Science Archive upload
-      console.log("Uploading to Science Archive...", {
-        file: selectedFile.name,
-        updatedHeaders: headerData
-      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
 
       setUploadProgress(100);
       
-      toast.success("File header updated and uploaded successfully!", {
-        description: `${selectedFile.name} uploaded to MinIO and Science Archive`
-      });
+      if (result.success) {
+        toast.success("File processed and uploaded successfully!", {
+          description: `${selectedFile.name} uploaded to MinIO and Science Archive`
+        });
+      } else {
+        throw new Error(result.error || 'Upload failed');
+      }
 
     } catch (error) {
+      console.error('Upload error:', error);
       toast.error("Upload failed", {
-        description: "Please try again or contact support"
+        description: error instanceof Error ? error.message : "Please try again or contact support"
       });
     } finally {
       setIsUploading(false);

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -21,6 +20,7 @@ interface FormData {
   OBSTYPE: string;
   BLKUID: number;
   REQNUM: number;
+  OBSERVER: string;
 }
 
 interface MetadataCardProps {

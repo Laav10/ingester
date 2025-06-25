@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -27,6 +26,9 @@ interface HeaderData {
   REQNUM: number;
   BLKUID: number;
   RLEVEL: number;
+  OBSERVER: string;
+  DAY_OBS: string;
+  L1PUBDAT: string;
 }
 
 interface HeaderDataCardProps {
@@ -35,7 +37,13 @@ interface HeaderDataCardProps {
 }
 
 const HeaderDataCard = ({ headerData, onHeaderChange }: HeaderDataCardProps) => {
-  const displayFields = ['TELESCOP', 'RA', 'DEC', 'AIRMASS', 'NAXIS1', 'NAXIS2'];
+  // Display all header fields for comprehensive editing
+  const displayFields = [
+    'TELESCOP', 'RA', 'DEC', 'AIRMASS', 'NAXIS1', 'NAXIS2', 
+    'OBJECT', 'INSTRUME', 'FILTER', 'EXPTIME', 'DATE-OBS',
+    'PROPID', 'SITEID', 'TELID', 'OBSTYPE', 'REQNUM', 'BLKUID', 
+    'RLEVEL', 'OBSERVER', 'DAY_OBS', 'L1PUBDAT'
+  ];
   
   return (
     <Card className="backdrop-blur-xl border shadow-2xl transition-all duration-500"
@@ -57,7 +65,7 @@ const HeaderDataCard = ({ headerData, onHeaderChange }: HeaderDataCardProps) => 
           FITS Header Data
         </CardTitle>
         <CardDescription style={{color: 'rgba(141, 216, 255, 0.8)'}}>
-          Additional header information for astronomical data processing
+          Complete header information for astronomical data processing
         </CardDescription>
       </CardHeader>
       <CardContent className="p-6 space-y-6">
@@ -69,9 +77,10 @@ const HeaderDataCard = ({ headerData, onHeaderChange }: HeaderDataCardProps) => 
               </Label>
               <Input
                 id={field}
-                type={typeof headerData[field as keyof HeaderData] === 'number' ? 'number' : 'text'}
+                type={typeof headerData[field as keyof HeaderData] === 'number' ? 'number' : 
+                      field.includes('DATE') ? 'datetime-local' : 'text'}
                 step={field === 'RA' || field === 'DEC' || field === 'AIRMASS' ? '0.01' : undefined}
-                value={headerData[field as keyof HeaderData]}
+                value={String(headerData[field as keyof HeaderData])}
                 onChange={(e) => onHeaderChange(field, typeof headerData[field as keyof HeaderData] === 'number' ? parseFloat(e.target.value) : e.target.value)}
                 className="backdrop-blur-sm transition-all"
                 style={{

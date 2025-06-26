@@ -22,9 +22,10 @@ const Index = () => {
     FILTER: "V",
     L1PUBDAT: "2025-07-01T00:00:00",
     OBSTYPE: "EXPOSE",
+    MODE: "NORMAL",
     BLKUID: 1,
     REQNUM: 1,
-    OBSERVER: "Dr. Astronomer"
+    OBSERVER: "Your Name"
   });
 
   const [headerData, setHeaderData] = useState({
@@ -46,6 +47,7 @@ const Index = () => {
     SITEID: "TST",
     TELID: "T01",
     OBSTYPE: "EXPOSE",
+    MODE: "NORMAL",
     REQNUM: 1,
     BLKUID: 1,
     RLEVEL: 0,
@@ -65,7 +67,7 @@ const Index = () => {
     }));
     
     // Synchronize with header data for common fields
-    if (['OBJECT', 'INSTRUME', 'FILTER', 'EXPTIME', 'PROPID', 'SITEID', 'TELID', 'OBSTYPE', 'REQNUM', 'BLKUID', 'RLEVEL', 'OBSERVER', 'DAY_OBS', 'L1PUBDAT'].includes(field)) {
+    if (['OBJECT', 'INSTRUME', 'FILTER', 'EXPTIME', 'PROPID', 'SITEID', 'TELID', 'OBSTYPE', 'MODE', 'REQNUM', 'BLKUID', 'RLEVEL', 'OBSERVER', 'DAY_OBS', 'L1PUBDAT'].includes(field)) {
       setHeaderData(prev => ({
         ...prev,
         [field]: value
@@ -88,7 +90,7 @@ const Index = () => {
     }));
     
     // Synchronize with form data for common fields
-    if (['OBJECT', 'INSTRUME', 'FILTER', 'EXPTIME', 'PROPID', 'SITEID', 'TELID', 'OBSTYPE', 'REQNUM', 'BLKUID', 'RLEVEL', 'OBSERVER', 'DAY_OBS', 'L1PUBDAT'].includes(field)) {
+    if (['OBJECT', 'INSTRUME', 'FILTER', 'EXPTIME', 'PROPID', 'SITEID', 'TELID', 'OBSTYPE', 'MODE', 'REQNUM', 'BLKUID', 'RLEVEL', 'OBSERVER', 'DAY_OBS', 'L1PUBDAT'].includes(field)) {
       setFormData(prev => ({
         ...prev,
         [field]: value

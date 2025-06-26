@@ -23,6 +23,7 @@ interface HeaderData {
   SITEID: string;
   TELID: string;
   OBSTYPE: string;
+  MODE: string;
   REQNUM: number;
   BLKUID: number;
   RLEVEL: number;
@@ -41,7 +42,7 @@ const HeaderDataCard = ({ headerData, onHeaderChange }: HeaderDataCardProps) => 
   const displayFields = [
     'TELESCOP', 'RA', 'DEC', 'AIRMASS', 'NAXIS1', 'NAXIS2', 
     'OBJECT', 'INSTRUME', 'FILTER', 'EXPTIME', 'DATE-OBS',
-    'PROPID', 'SITEID', 'TELID', 'OBSTYPE', 'REQNUM', 'BLKUID', 
+    'PROPID', 'SITEID', 'TELID', 'OBSTYPE', 'MODE', 'REQNUM', 'BLKUID', 
     'RLEVEL', 'OBSERVER', 'DAY_OBS', 'L1PUBDAT'
   ];
   
@@ -57,7 +58,7 @@ const HeaderDataCard = ({ headerData, onHeaderChange }: HeaderDataCardProps) => 
                     background: 'linear-gradient(to right, rgba(20, 20, 30, 0.6), rgba(141, 216, 255, 0.3), rgba(20, 20, 30, 0.6))',
                     borderColor: 'rgba(141, 216, 255, 0.3)'
                   }}>
-        <CardTitle className="flex items-center gap-3 text-xl" style={{color: '#4E71FF'}}>
+        <CardTitle className="flex items-center gap-3 text-xl" style={{color: '#8DD8FF'}}>
           <div className="p-2 rounded-lg border" 
                style={{backgroundColor: 'rgba(141, 216, 255, 0.2)', borderColor: 'rgba(141, 216, 255, 0.4)'}}>
             <Server className="w-5 h-5" style={{color: '#8DD8FF'}} />
@@ -72,7 +73,7 @@ const HeaderDataCard = ({ headerData, onHeaderChange }: HeaderDataCardProps) => 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {displayFields.map((field) => (
             <div key={field} className="space-y-2">
-              <Label htmlFor={field} className="font-medium" style={{color: '#4E71FF'}}>
+              <Label htmlFor={field} className="font-medium" style={{color: '#fff'}}>
                 {field}
               </Label>
               <Input
@@ -86,7 +87,7 @@ const HeaderDataCard = ({ headerData, onHeaderChange }: HeaderDataCardProps) => 
                 style={{
                   backgroundColor: 'rgba(20, 20, 30, 0.6)',
                   borderColor: 'rgba(141, 216, 255, 0.4)',
-                  color: '#4E71FF'
+                  color: '#fff'
                 }}
               />
             </div>

@@ -79,6 +79,7 @@ class AstronomicalIngester:
             "SITEID": metadata.get("SITEID", header_data.get("SITEID", "Unknown")),
             "TELID": metadata.get("TELID", header_data.get("TELID", "Unknown")),
             "OBSTYPE": metadata.get("OBSTYPE", header_data.get("OBSTYPE", "Unknown")),
+            "MODE": metadata.get("MODE", header_data.get("MODE", "NORMAL")),
             "REQNUM": metadata.get("REQNUM", header_data.get("REQNUM", 1)),
             "BLKUID": metadata.get("BLKUID", header_data.get("BLKUID", 1)),
             "RLEVEL": metadata.get("RLEVEL", header_data.get("RLEVEL", 0)),
@@ -86,6 +87,12 @@ class AstronomicalIngester:
             "DAY_OBS": metadata.get("DAY_OBS", header_data.get("DAY_OBS", "")),
             "L1PUBDAT": metadata.get("L1PUBDAT", header_data.get("L1PUBDAT", ""))
         }
+        
+        # Debug: Print MODE value
+        mode_value = header_update_data["MODE"]
+        print(f"DEBUG: MODE value being set: {mode_value}")
+        print(f"DEBUG: MODE from metadata: {metadata.get('MODE', 'NOT_FOUND')}")
+        print(f"DEBUG: MODE from header_data: {header_data.get('MODE', 'NOT_FOUND')}")
         
         try:
             with fits.open(file_path, mode='update') as hdul:
@@ -97,6 +104,8 @@ class AstronomicalIngester:
                 # Add all header values
                 for key, value in header_update_data.items():
                     hdu.header[key] = value
+                    if key == "MODE":
+                        print(f"DEBUG: Added MODE={value} to header")
                 
                 # Add EXTEND=T if file has extensions
                 if len(hdul) > 1:
@@ -104,6 +113,12 @@ class AstronomicalIngester:
                 
                 # Add timestamp comment
                 hdu.header.add_comment(f"Header updated on {datetime.datetime.now().isoformat()}")
+                
+                # Debug: Verify MODE is in header
+                if "MODE" in hdu.header:
+                    print(f"DEBUG: MODE confirmed in header: {hdu.header['MODE']}")
+                else:
+                    print("DEBUG: MODE NOT found in header after writing!")
                 
             print(f"✓ Header updated successfully for {file_path}")
             return True
@@ -150,6 +165,7 @@ class AstronomicalIngester:
             "SITEID": metadata.get("SITEID", header_data.get("SITEID", "Unknown")),
             "TELID": metadata.get("TELID", header_data.get("TELID", "Unknown")),
             "OBSTYPE": metadata.get("OBSTYPE", header_data.get("OBSTYPE", "Unknown")),
+            "MODE": metadata.get("MODE", header_data.get("MODE", "NORMAL")),
             "REQNUM": metadata.get("REQNUM", header_data.get("REQNUM", 1)),
             "BLKUID": metadata.get("BLKUID", header_data.get("BLKUID", 1)),
             "RLEVEL": metadata.get("RLEVEL", header_data.get("RLEVEL", 0)),

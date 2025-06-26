@@ -18,6 +18,7 @@ interface FormData {
   FILTER: string;
   L1PUBDAT: string;
   OBSTYPE: string;
+  MODE: string;
   BLKUID: number;
   REQNUM: number;
   OBSERVER: string;

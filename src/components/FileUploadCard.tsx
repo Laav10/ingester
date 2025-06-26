@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -59,7 +58,11 @@ const FileUploadCard = ({
               style={{
                 backgroundColor: 'rgba(20, 20, 30, 0.6)',
                 borderColor: 'rgba(84, 9, 218, 0.4)',
-                color: '#5409DA'
+                color: '#fff',
+                // Add the following for white browse button
+                // For most browsers, ::file-selector-button is styled via the 'file:' tailwind or custom CSS, but inline fallback:
+                // This will not affect all browsers, but helps for some
+                // For full support, a global CSS rule may be needed
               }}
               accept=".fits,.fit,.fts"
             />
